@@ -72,7 +72,6 @@ const updateWorkplace = async (req, res) => {
   workplace.address = address;
 
   const updatedWorkplace = await workplace.save();
-  console.log(updatedWorkplace);
 
   res.json({ message: `${updatedWorkplace.name} successfully updated` });
 };
