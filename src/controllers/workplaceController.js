@@ -62,7 +62,6 @@ const updateWorkplace = async (req, res) => {
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
-  console.log(duplicate);
 
   if (duplicate && duplicate._id.toString() !== id) {
     return res.status(409).json({ message: "Duplicate workplace name" });
