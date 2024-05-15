@@ -1,5 +1,5 @@
 const workplaceRoutes = require("express").Router();
-const workplaceController = require("../controllers/workplaceController");
+const workplaceController = require("../controllers/workplacesController");
 
 workplaceRoutes
   .route("/")

@@ -1,5 +1,5 @@
 const announcementRoutes = require("express").Router();
-const announcementController = require("../controllers/announcementController");
+const announcementController = require("../controllers/announcementsController");
 
 announcementRoutes
   .route("/")
