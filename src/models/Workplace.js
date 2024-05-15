@@ -28,6 +28,4 @@ workplaceSchema.set("toJSON", {
   },
 });
 
-const Workplace = mongoose.model("Workplace", workplaceSchema);
-
-module.exports = Workplace;
+module.exports = mongoose.model("Workplace", workplaceSchema);
