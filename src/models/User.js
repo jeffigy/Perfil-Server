@@ -17,10 +17,10 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "None",
+      default: "Patient",
     },
-    // Roles: [None, Patient, Health Worker, admin]
-    //optional fields depende on the role
+    // Roles: [ Patient, Health Worker, admin]
+    //optional fields depends on the role
     bday: {
       type: Number,
       require: false,
@@ -29,30 +29,34 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: false,
     },
-    civilStatus: { 
-      type: String, 
-      require: false, 
+    civilStatus: {
+      type: String,
+      require: false,
     },
-    fathersName: { 
-      type: String, 
-      require: false, 
+    fathersName: {
+      type: String,
+      require: false,
     },
-    mothersName: { 
-      type: String, 
-      require: false, 
+    mothersName: {
+      type: String,
+      require: false,
     },
-    ethnicity: { 
-      type: String, 
-      require: false, 
+    ethnicity: {
+      type: String,
+      require: false,
     },
-    nationality: { 
-      type: String, 
-      require: false, 
+    nationality: {
+      type: String,
+      require: false,
     },
-    workplace: { 
+    workplace: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "workplace",
-      require: false, 
+      ref: "Workplace",
+      require: false,
+    },
+    active: {
+      type: Boolean,
+      default: true,
     },
   },
   {
@@ -62,12 +66,13 @@ const userSchema = new mongoose.Schema(
 
 userSchema.set("toJSON", {
   transform: (_document, returnedObject) => {
-    returnedObject.id = returnedObjectl._id.toString();
+    returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.password;
-  }
-})
+  },
+});
 
-const User = module.exports = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
+
 module.exports = User;
