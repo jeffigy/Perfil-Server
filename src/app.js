@@ -8,6 +8,7 @@ const announcementRoutes = require("./routes/announcementRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const testResultRoutes = require("./routes/testResultRoutes");
 const authRoutes = require("./routes/authRoutes");
+const patientRoutes = require("./routes/patientRoutes");
 const app = express();
 
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use("/workplaces", workplaceRoutes);
 app.use("/announcements", announcementRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/test-results", testResultRoutes);
+app.use("/patients", patientRoutes);
 
 app.get("/", (_req, res) => {
   return res.json({ message: "welcome to perfil server side" });
