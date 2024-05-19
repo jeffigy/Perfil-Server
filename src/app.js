@@ -7,11 +7,13 @@ const workplaceRoutes = require("./routes/workplaceRoutes");
 const announcementRoutes = require("./routes/announcementRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const testResultRoutes = require("./routes/testResultRoutes");
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
+app.use("/auth", authRoutes);
 app.use("/users", usersRoute);
 app.use("/workplaces", workplaceRoutes);
 app.use("/announcements", announcementRoutes);
