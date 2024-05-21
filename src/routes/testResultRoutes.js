@@ -8,4 +8,8 @@ testResultRoutes
   .patch(testResultsController.updateTestResult)
   .delete(testResultsController.deleteTestResult);
 
+testResultRoutes
+  .route("/:apptId")
+  .get(testResultsController.getAllTestResultsByAppointmentByAppointmentId);
+
 module.exports = testResultRoutes;

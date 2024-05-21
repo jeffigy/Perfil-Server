@@ -9,6 +9,16 @@ const getAllTestResults = async (_req, res) => {
   res.json(testResults);
 };
 
+const getAllTestResultsByAppointmentByAppointmentId = async (req, res) => {
+  const { apptId } = req.params;
+  const testResults = await TestResult.find({ appointment: apptId }).exec();
+
+  if (testResults.length === 0) {
+    return res.status(400).json({ message: "No test results found" });
+  }
+  res.json(testResults);
+};
+
 const newTestResult = async (req, res) => {
   const {
     patient,
@@ -113,6 +123,7 @@ const deleteTestResult = async (req, res) => {
 
 module.exports = {
   getAllTestResults,
+  getAllTestResultsByAppointmentByAppointmentId,
   newTestResult,
   updateTestResult,
   deleteTestResult,
