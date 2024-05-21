@@ -10,6 +10,18 @@ const getAllAnnouncements = async (req, res) => {
   res.json(announcements);
 };
 
+const getAllAnnouncementsByWorkplaceId = async (req, res) => {
+  const { workId } = req.params;
+
+  const announcements = await Announcement.find({ workplace: workId }).exec();
+
+  if (announcements.length === 0) {
+    return res.status(400).json({ message: "No announcements found" });
+  }
+
+  res.json(announcements);
+};
+
 const newAnnouncement = async (req, res) => {
   const { workplace, title, description } = req.body;
 
@@ -93,6 +105,7 @@ const deleteAnnouncement = async (req, res) => {
 
 module.exports = {
   getAllAnnouncements,
+  getAllAnnouncementsByWorkplaceId,
   newAnnouncement,
   updateAnnouncement,
   deleteAnnouncement,

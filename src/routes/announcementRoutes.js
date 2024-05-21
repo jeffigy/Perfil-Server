@@ -8,4 +8,8 @@ announcementRoutes
   .patch(announcementController.updateAnnouncement)
   .delete(announcementController.deleteAnnouncement);
 
+announcementRoutes
+  .route("/:workId")
+  .get(announcementController.getAllAnnouncementsByWorkplaceId);
+
 module.exports = announcementRoutes;
