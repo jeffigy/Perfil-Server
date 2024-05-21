@@ -10,6 +10,18 @@ const getAllAppointments = async (_req, res) => {
   res.json(appointments);
 };
 
+const getAllAppointmentsByWorkplaceId = async (req, res) => {
+  const { workId } = req.params;
+
+  const appointments = await Appointment.find({ workplace: workId }).exec();
+
+  if (appointments.length === 0) {
+    return res.status(400).json({ message: "No appointments found" });
+  }
+
+  res.json(appointments);
+};
+
 const newAppointment = async (req, res) => {
   const { title, category, startDate, endDate, workplace } = req.body;
 
@@ -107,6 +119,7 @@ const deleteAppointment = async (req, res) => {
 
 module.exports = {
   getAllAppointments,
+  getAllAppointmentsByWorkplaceId,
   newAppointment,
   updateAppointment,
   deleteAppointment,

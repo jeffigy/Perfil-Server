@@ -8,4 +8,8 @@ appointmentRoutes
   .patch(appointmentsController.updateAppointment)
   .delete(appointmentsController.deleteAppointment);
 
+appointmentRoutes
+  .route("/:workId")
+  .get(appointmentsController.getAllAppointmentsByWorkplaceId);
+
 module.exports = appointmentRoutes;
