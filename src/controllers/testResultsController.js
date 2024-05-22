@@ -1,22 +1,40 @@
 const TestResult = require("../models/TestResult");
+const User = require("../models/User");
 
 const getAllTestResults = async (_req, res) => {
-  const testResults = await TestResult.find({});
+  const testResults = await TestResult.find().lean();
+
   if (testResults.length === 0) {
     return res.status(400).json({ message: "No test resuls found" });
   }
 
-  res.json(testResults);
+  const testResultsWithPatient = await Promise.all(
+    testResults.map(async (testResult) => {
+      const patient = await User.findById(testResult.patient).lean().exec();
+      return { ...testResult, patientName: patient.name };
+    })
+  );
+
+  res.json(testResultsWithPatient);
 };
 
 const getAllTestResultsByAppointmentByAppointmentId = async (req, res) => {
   const { apptId } = req.params;
-  const testResults = await TestResult.find({ appointment: apptId }).exec();
+
+  const testResults = await TestResult.find({ appointment: apptId }).lean();
 
   if (testResults.length === 0) {
     return res.status(400).json({ message: "No test results found" });
   }
-  res.json(testResults);
+
+  const testResultsWithPatient = await Promise.all(
+    testResults.map(async (testResult) => {
+      const patient = await User.findById(testResult.patient).lean().exec();
+      return { ...testResult, patientName: patient.name };
+    })
+  );
+
+  res.json(testResultsWithPatient);
 };
 
 const newTestResult = async (req, res) => {
