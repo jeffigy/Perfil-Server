@@ -3,6 +3,7 @@ require("express-async-errors");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 const path = require("path");
 const rootRoute = require("./routes/rootRoute");
 const usersRoute = require("./routes/userRoutes");
@@ -12,12 +13,27 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const testResultRoutes = require("./routes/testResultRoutes");
 const authRoutes = require("./routes/authRoutes");
 const patientRoutes = require("./routes/patientRoutes");
+
+morgan.token("req-body", (req, _res) => {
+  if (
+    process.env.NODE_ENV !== "test" &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(req.method)
+  ) {
+    return JSON.stringify(req.body);
+  }
+  return "";
+});
+
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :req-body"
+  )
+);
 app.get("/", rootRoute);
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/auth", authRoutes);
