@@ -13,11 +13,12 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const testResultRoutes = require("./routes/testResultRoutes");
 const authRoutes = require("./routes/authRoutes");
 const patientRoutes = require("./routes/patientRoutes");
+const corsOptions = require("./utils/corsOptions");
 
 morgan.token("req-body", (req, _res) => {
   if (
     process.env.NODE_ENV !== "test" &&
-    ["POST", "PUT", "PATCH", "DELETE"].includes(req.method)
+    process.env.NODE_ENV !== "production"
   ) {
     return JSON.stringify(req.body);
   }
@@ -27,7 +28,7 @@ morgan.token("req-body", (req, _res) => {
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(
   morgan(
