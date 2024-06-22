@@ -3,7 +3,6 @@ const { setToJSONTransform } = require("../utils/mongooseUtils");
 
 const userSchema = new mongoose.Schema(
   {
-    // required during registration
     email: {
       type: String,
       require: true,
@@ -18,42 +17,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "Patient",
-    },
-    // Roles: [ Patient, Health Worker, admin]
-    //optional fields depends on the role
-    bday: {
-      type: Number,
-      require: false,
-    },
-    gender: {
-      type: String,
-      require: false,
-    },
-    civilStatus: {
-      type: String,
-      require: false,
-    },
-    fathersName: {
-      type: String,
-      require: false,
-    },
-    mothersName: {
-      type: String,
-      require: false,
-    },
-    ethnicity: {
-      type: String,
-      require: false,
-    },
-    nationality: {
-      type: String,
-      require: false,
-    },
-    workplace: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Workplace",
-      require: false,
+      default: "Health Woker",
     },
     active: {
       type: Boolean,
