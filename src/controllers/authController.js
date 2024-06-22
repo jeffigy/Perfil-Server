@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../utils/config");
+const Patient = require("../models/Patient");
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -10,7 +11,7 @@ const signup = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const duplicate = await User.findOne({ email })
+  const duplicate = await Patient.findOne({ email })
     .collation({
       locale: "en",
       strength: 2,
@@ -28,10 +29,9 @@ const signup = async (req, res) => {
     email,
     name,
     password: hashedPwd,
-    role: "Patient",
   };
 
-  const createdUser = await User.create(userObj);
+  const createdUser = await Patient.create(userObj);
 
   if (!createdUser) {
     res.status(400).json({ message: "Received invalid data" });
@@ -71,7 +71,16 @@ const login = async (req, res) => {
     return res.status(400).json({ message: "email and password are required" });
   }
 
-  const foundUser = await User.findOne({ email }).exec();
+  //  aggregate meothod is used to perform a sequence of data transformation and processing steps
+  const combinedResults = await User.aggregate([
+    {
+      $unionWith: {
+        coll: "patients", // coll: 'patients' specifies the collection to combine (patients).
+      },
+    },
+  ]);
+
+  const foundUser = combinedResults[0];
 
   if (!foundUser || !foundUser.active) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -129,7 +138,16 @@ const refresh = (req, res) => {
         return res.status(403).json({ message: "Fobidden" });
       }
 
-      const foundUser = await User.findOne({ email: decoded.email }).exec();
+      const combinedResults = await User.aggregate([
+        {
+          $unionWith: {
+            coll: "patients",
+          },
+        },
+        { $match: { email: decoded.email } },
+      ]);
+
+      const foundUser = combinedResults[0];
 
       if (!foundUser) {
         return res.status(401).json({ message: "Unauthorized" });
