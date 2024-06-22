@@ -17,7 +17,7 @@ const addUser = async (req, res) => {
   if (!email || !name || !password || !role) {
     return res
       .status(400)
-      .json({ message: "name, email, and password are required" });
+      .json({ message: "name, email, role, and password are required" });
   }
 
   const duplicate = await User.findOne({ email })
@@ -91,7 +91,7 @@ const deleteUser = async (req, res) => {
     return res.status(400).json({ message: "user id is required" });
   }
 
-  const user = await User.findById(id).lean().exec();
+  const user = await User.findById(id).exec();
 
   if (!user) {
     return res.status(400).json({ message: "User not found" });
