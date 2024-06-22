@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { setToJSONTransform } = require("../utils/mongooseUtils");
 
 const workplaceSchema = new mongoose.Schema(
   {
@@ -20,12 +21,6 @@ const workplaceSchema = new mongoose.Schema(
   }
 );
 
-workplaceSchema.set("toJSON", {
-  transform: (_document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
-});
+setToJSONTransform(workplaceSchema);
 
 module.exports = mongoose.model("Workplace", workplaceSchema);
