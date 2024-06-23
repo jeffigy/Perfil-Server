@@ -11,7 +11,7 @@ const signup = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const duplicate = await Patient.findOne({ email })
+  const duplicatePatient = await Patient.findOne({ email })
     .collation({
       locale: "en",
       strength: 2,
@@ -19,7 +19,15 @@ const signup = async (req, res) => {
     .lean()
     .exec();
 
-  if (duplicate) {
+  const duplicateUser = await User.findOne({ email })
+    .collation({
+      locale: "en",
+      strength: 2,
+    })
+    .lean()
+    .exec();
+
+  if (duplicateUser || duplicatePatient) {
     return res.status(409).json({ message: "Duplicate Email" });
   }
 
@@ -71,16 +79,13 @@ const login = async (req, res) => {
     return res.status(400).json({ message: "email and password are required" });
   }
 
-  //  aggregate meothod is used to perform a sequence of data transformation and processing steps
-  const combinedResults = await User.aggregate([
-    {
-      $unionWith: {
-        coll: "patients", // coll: 'patients' specifies the collection to combine (patients).
-      },
-    },
-  ]);
+  // Find user in the User collection
+  let foundUser = await User.findOne({ email }).exec();
 
-  const foundUser = combinedResults[0];
+  // If not found in User, find in Patient collection
+  if (!foundUser) {
+    foundUser = await Patient.findOne({ email }).exec();
+  }
 
   if (!foundUser || !foundUser.active) {
     return res.status(401).json({ message: "Unauthorized" });
