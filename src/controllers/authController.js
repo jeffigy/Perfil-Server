@@ -79,10 +79,8 @@ const login = async (req, res) => {
     return res.status(400).json({ message: "email and password are required" });
   }
 
-  // Find user in the User collection
   let foundUser = await User.findOne({ email }).exec();
 
-  // If not found in User, find in Patient collection
   if (!foundUser) {
     foundUser = await Patient.findOne({ email }).exec();
   }
