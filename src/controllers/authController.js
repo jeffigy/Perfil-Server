@@ -89,7 +89,7 @@ const login = async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const pwdMatch = bcrypt.compare(password, foundUser.password);
+  const pwdMatch = await bcrypt.compare(password, foundUser.password);
 
   if (!pwdMatch) {
     return res.status(401).json({ message: "Unauthorized" });
