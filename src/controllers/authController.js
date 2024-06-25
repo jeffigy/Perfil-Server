@@ -125,8 +125,6 @@ const login = async (req, res) => {
 const refresh = (req, res) => {
   const cookies = req.cookies;
 
-  console.log("cookies.jwt", cookies.jwt);
-
   if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
 
   const refreshToken = cookies.jwt;
@@ -159,7 +157,6 @@ const refresh = (req, res) => {
         config.ACCESS_TOKEN_SECRET,
         { expiresIn: "15m" }
       );
-
       res.json({ accessToken });
     }
   );
