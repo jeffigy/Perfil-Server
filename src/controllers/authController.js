@@ -125,11 +125,9 @@ const login = async (req, res) => {
 const refresh = (req, res) => {
   const cookies = req.cookies;
 
-  console.log(cookies);
+  console.log("cookies.jwt", cookies.jwt);
 
-  if (!cookies?.jwt) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
 
   const refreshToken = cookies.jwt;
 
@@ -141,16 +139,11 @@ const refresh = (req, res) => {
         return res.status(403).json({ message: "Fobidden" });
       }
 
-      const combinedResults = await User.aggregate([
-        {
-          $unionWith: {
-            coll: "patients",
-          },
-        },
-        { $match: { email: decoded.email } },
-      ]);
+      let foundUser = await User.findOne({ email: decoded.email }).exec();
 
-      const foundUser = combinedResults[0];
+      if (!foundUser) {
+        foundUser = await Patient.findOne({ email: decoded.email }).exec();
+      }
 
       if (!foundUser) {
         return res.status(401).json({ message: "Unauthorized" });
