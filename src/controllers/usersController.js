@@ -1,8 +1,9 @@
 const User = require("../models/User");
+const Patient = require("../models/Patient");
 const bcrypt = require("bcrypt");
 
 const getAllUsers = async (_req, res) => {
-  const users = await User.find({ role: { $ne: "Patient" } });
+  const users = await User.find();
 
   if (users.length === 0) {
     return res.status(400).json({ message: "No users found" });
@@ -12,21 +13,36 @@ const getAllUsers = async (_req, res) => {
 };
 
 const addUser = async (req, res) => {
-  const { email, name, password, role } = req.body;
+  const { email, name, password, roles } = req.body;
 
-  if (!email || !name || !password || !role) {
-    return res
-      .status(400)
-      .json({ message: "name, email, role, and password are required" });
+  if (!email || !name || !password) {
+    return res.status(400).json({ message: "all fields are required" });
   }
 
-  const duplicate = await User.findOne({ email })
-    .collation({ locale: "en", strength: 2 })
+  const duplicatePatient = await Patient.findOne({ email })
+    .collation({
+      locale: "en",
+      strength: 2,
+    })
     .lean()
     .exec();
 
-  if (duplicate) {
-    return res.status(400).json({ message: "Duplicate Email" });
+  console.log("duplicatePatient", duplicatePatient);
+
+  const duplicateUser = await User.findOne({ email })
+    .collation({
+      locale: "en",
+      strength: 2,
+    })
+    .lean()
+    .exec();
+
+  console.log("duplicateUser", duplicateUser);
+
+  if (duplicateUser || duplicatePatient) {
+    return res
+      .status(409)
+      .json({ message: "An account with similar email already exists" });
   }
 
   const hashedPwd = await bcrypt.hash(password, 10);
@@ -35,7 +51,7 @@ const addUser = async (req, res) => {
     email,
     name,
     password: hashedPwd,
-    role,
+    roles,
   };
 
   const newUser = await User.create(userObj);
@@ -43,14 +59,21 @@ const addUser = async (req, res) => {
   if (newUser) {
     return res.status(201).json({ message: "new user created" });
   } else {
-    return res.status(400).json({ message: "Received invalid user data" });
+    return res.status(400).json({ message: "Received invalid data" });
   }
 };
 
 const updateUser = async (req, res) => {
-  const { id, email, name, password, role, active } = req.body;
+  const { id, email, name, password, roles, active } = req.body;
 
-  if (!id || !email || !name || !role || typeof active !== "boolean") {
+  if (
+    !id ||
+    !email ||
+    !name ||
+    !Array.isArray(roles) ||
+    !roles.length ||
+    typeof active !== "boolean"
+  ) {
     return res
       .status(400)
       .json({ message: "all fields except password are required" });
@@ -72,7 +95,7 @@ const updateUser = async (req, res) => {
   }
   user.name = name;
   user.email = email;
-  user.role = role;
+  user.roles = roles;
   user.active = active;
 
   if (password) {

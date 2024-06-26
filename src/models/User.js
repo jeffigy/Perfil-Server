@@ -15,9 +15,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    role: {
-      type: String,
-      default: "Health Woker",
+    roles: {
+      type: [String],
+      default: ["Health Woker"],
     },
     active: {
       type: Boolean,

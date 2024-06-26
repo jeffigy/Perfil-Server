@@ -28,7 +28,9 @@ const signup = async (req, res) => {
     .exec();
 
   if (duplicateUser || duplicatePatient) {
-    return res.status(409).json({ message: "Duplicate Email" });
+    return res
+      .status(409)
+      .json({ message: "An account with similar email already exists" });
   }
 
   const hashedPwd = await bcrypt.hash(password, 10);
@@ -49,7 +51,7 @@ const signup = async (req, res) => {
     {
       UserInfo: {
         email: createdUser.email,
-        roles: createdUser.role,
+        roles: createdUser.roles,
       },
     },
     config.ACCESS_TOKEN_SECRET,
@@ -85,7 +87,13 @@ const login = async (req, res) => {
     foundUser = await Patient.findOne({ email }).exec();
   }
 
-  if (!foundUser || !foundUser.active) {
+  if (!foundUser) {
+    return res
+      .status(401)
+      .json({ message: "Incorrect email or password. Please try again." });
+  }
+
+  if (foundUser && !foundUser.active) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -99,7 +107,7 @@ const login = async (req, res) => {
     {
       UserInfo: {
         email: foundUser.email,
-        roles: foundUser.role,
+        roles: foundUser.roles,
       },
     },
     config.ACCESS_TOKEN_SECRET,
@@ -151,7 +159,7 @@ const refresh = (req, res) => {
         {
           UserInfo: {
             email: foundUser.email,
-            role: foundUser.role,
+            roles: foundUser.roles,
           },
         },
         config.ACCESS_TOKEN_SECRET,

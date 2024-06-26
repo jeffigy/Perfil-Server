@@ -15,9 +15,9 @@ const patientSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    role: {
-      type: String,
-      default: "Patient",
+    roles: {
+      type: [String],
+      default: ["Patient"],
     },
     bday: {
       type: Number,
