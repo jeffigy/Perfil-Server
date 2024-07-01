@@ -13,10 +13,14 @@ const getAllUsers = async (_req, res) => {
 };
 
 const addUser = async (req, res) => {
-  const { email, name, password, roles } = req.body;
+  const { email, name, password, roles, confirmPassword } = req.body;
 
-  if (!email || !name || !password) {
+  if (!email || !name || !password || !confirmPassword) {
     return res.status(400).json({ message: "all fields are required" });
+  }
+
+  if(password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
   }
 
   const duplicatePatient = await Patient.findOne({ email })
