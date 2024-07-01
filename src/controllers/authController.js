@@ -5,10 +5,14 @@ const config = require("../utils/config");
 const Patient = require("../models/Patient");
 
 const signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !confirmPassword) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
   }
 
   const duplicatePatient = await Patient.findOne({ email })
