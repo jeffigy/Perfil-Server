@@ -67,7 +67,7 @@ const signup = async (req, res) => {
     from: `"Perfil" <${config.MAILER_USER}>`,
     subject: "Email Verification",
     text: `Please verify your email by clicking the link: \n\n 
-           http://localhost:5173/verify/${newUser.verificationToken}\n\n 
+          ${config.FRONTEND_URL}/verify/${newUser.verificationToken}\n\n 
            If you did not request this, please ignore this email.`,
   };
 
@@ -79,26 +79,28 @@ const signup = async (req, res) => {
 
 const verify = async (req, res) => {
   const { token } = req.params;
-  console.log("Received token:", token);
+
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
+
   const user = await Patient.findOne({
     verificationToken: token,
     verificationTokenExpires: { $gt: Date.now() },
   });
 
   if (!user) {
-    console.log("Token is invalid or has expired.");
     return res
       .status(400)
       .json({ message: "Verification token is invalid or has expired." });
   }
 
-  user.isVerified = true;
+  user.verified = true;
   user.verificationToken = undefined;
   user.verificationTokenExpires = undefined;
 
   await user.save();
 
-  console.log("User verified successfully.");
   return res
     .status(200)
     .json({ message: "Your email has been verified successfully!" });

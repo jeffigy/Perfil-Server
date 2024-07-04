@@ -12,6 +12,7 @@ const CORS_WHITELIST = process.env.CORS_WHITELIST
   : [];
 const MAILER_USER = process.env.MAILER_USER;
 const MAILER_PASSWORD = process.env.MAILER_PASSWORD;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 module.exports = {
   MONGODB_URI,
@@ -21,4 +22,5 @@ module.exports = {
   CORS_WHITELIST,
   MAILER_USER,
   MAILER_PASSWORD,
+  FRONTEND_URL,
 };
