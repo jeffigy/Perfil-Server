@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const config = require("../utils/config");
 const User = require("../models/User");
 const Patient = require("../models/Patient");
+const sendVerificationEmail = require("../utils/sendVerificationEmail");
 
 const signup = async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
@@ -41,37 +42,19 @@ const signup = async (req, res) => {
 
   const hashedPwd = await bcrypt.hash(password, 10);
 
-  const userObj = {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+  const newUser = await Patient.create({
     email,
     name,
     password: hashedPwd,
-  };
-
-  const newUser = new Patient(userObj);
-
-  newUser.verificationToken = crypto.randomBytes(32).toString("hex");
-  newUser.verificationTokenExpires = Date.now() + 3600000; // 1 hour
-
-  await newUser.save();
-
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: config.MAILER_USER,
-      pass: config.MAILER_PASSWORD,
-    },
+    verificationToken,
+    verificationTokenExpires,
   });
 
-  const mailOptions = {
-    to: newUser.email,
-    from: `"Perfil" <${config.MAILER_USER}>`,
-    subject: "Email Verification",
-    text: `Please verify your email by clicking the link: \n\n 
-          ${config.FRONTEND_URL}/verify/${newUser.verificationToken}\n\n 
-           If you did not request this, please ignore this email.`,
-  };
+  await sendVerificationEmail(newUser.email, verificationToken);
 
-  await transporter.sendMail(mailOptions);
   res.status(200).json({
     message: "A verification email has been sent to " + newUser.email + ".",
   });
@@ -98,12 +81,33 @@ const verify = async (req, res) => {
   user.verified = true;
   user.verificationToken = undefined;
   user.verificationTokenExpires = undefined;
-
   await user.save();
 
-  return res
-    .status(200)
-    .json({ message: "Your email has been verified successfully!" });
+  const accessToken = jwt.sign(
+    {
+      UserInfo: {
+        email: user.email,
+        roles: user.roles,
+      },
+    },
+    config.ACCESS_TOKEN_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  const refreshToken = jwt.sign(
+    { email: user.email },
+    config.REFRESH_TOKEN_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.json({ accessToken });
 };
 
 const login = async (req, res) => {
@@ -133,6 +137,20 @@ const login = async (req, res) => {
 
   if (!pwdMatch) {
     return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!foundUser.verified) {
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    foundUser.verificationToken = verificationToken;
+    foundUser.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    await foundUser.save();
+
+    await sendVerificationEmail(foundUser.email, verificationToken);
+    return res
+      .status(401)
+      .json({
+        message: "Email not verified. A new verification email has been sent",
+      });
   }
 
   const accessToken = jwt.sign(
