@@ -60,9 +60,18 @@ const patientSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    avatar: {
+      type: String,
+      require: false,
+    },
+    cloudinary_id: {
+      type: String,
+      require: false,
+    },
     verificationToken: String,
     verificationTokenExpires: Date,
   },
+
   {
     timestamps: true,
   }

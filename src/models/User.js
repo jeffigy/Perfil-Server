@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    avatar: {
+      type: String,
+      require: false,
+    },
+    cloudinary_id: {
+      type: String,
+      require: false,
+    },
   },
   {
     timestamps: true,
