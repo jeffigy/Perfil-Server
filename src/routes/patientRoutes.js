@@ -10,6 +10,8 @@ patientRoutes
   .route("/update-profile")
   .patch(upload.single("image"), patientsController.updateProfile);
 
+patientRoutes.route("/join-workplace").patch(patientsController.joinWorkplace);
+
 patientRoutes
   .route("/:workId")
   .get(patientsController.getAllPatientsByWorkplaceId);

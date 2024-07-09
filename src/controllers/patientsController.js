@@ -1,4 +1,5 @@
 const Patient = require("../models/Patient");
+const Workplace = require("../models/Workplace");
 const cloudinary = require("../utils/cloudinary");
 
 const getAllPatients = async (_req, res) => {
@@ -90,6 +91,39 @@ const updateProfile = async (req, res) => {
   res.json({ message: "Profile successfully updated" });
 };
 
+const joinWorkplace = async (req, res) => {
+  const { id, workplace } = req.body;
+
+  if (!id || !workplace) {
+    return res.status(400).json({ message: "id and workplace are required" });
+  }
+
+  const patient = await Patient.findById(id).exec();
+
+  const incompleteDetails =
+    !patient.bday ||
+    !patient.gender ||
+    !patient.civilStatus ||
+    !patient.fathersName ||
+    !patient.mothersName ||
+    !patient.ethnicity ||
+    !patient.nationality;
+
+  if (incompleteDetails) {
+    res.status(400).json({ message: "your details are incomplete" });
+  }
+
+  const foundWorkplace = await Workplace.findById(workplace).exec();
+
+  if (!foundWorkplace) {
+    return res.status(400).json({ message: "Workplace not found" });
+  }
+
+  patient.workplace = workplace;
+  await patient.save();
+  res.json({ message: "Successfully joined workplace" });
+};
+
 const getAllPatientsByWorkplaceId = async (req, res) => {
   const { workId } = req.params;
 
@@ -108,5 +142,6 @@ module.exports = {
   getAllPatients,
   updateDetails,
   updateProfile,
+  joinWorkplace,
   getAllPatientsByWorkplaceId,
 };
