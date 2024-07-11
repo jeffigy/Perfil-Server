@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: false,
     },
+    verified: Boolean,
   },
   {
     timestamps: true,
