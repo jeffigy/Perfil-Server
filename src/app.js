@@ -12,6 +12,7 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const testResultRoutes = require("./routes/testResultRoutes");
 const authRoutes = require("./routes/authRoutes");
 const patientRoutes = require("./routes/patientRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 const corsOptions = require("./utils/corsOptions");
 const morgan = require("./middleware/morgan");
 
@@ -30,6 +31,7 @@ app.use("/announcements", announcementRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/test-results", testResultRoutes);
 app.use("/patients", patientRoutes);
+app.use("/profile", profileRoutes);
 
 app.all("*", (req, res) => {
   res.status(404);
