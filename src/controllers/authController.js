@@ -146,11 +146,9 @@ const login = async (req, res) => {
     await foundUser.save();
 
     await sendVerificationEmail(foundUser.email, verificationToken);
-    return res
-      .status(401)
-      .json({
-        message: "Email not verified. A new verification email has been sent",
-      });
+    return res.status(401).json({
+      message: "Email not verified. A new verification email has been sent",
+    });
   }
 
   const accessToken = jwt.sign(
