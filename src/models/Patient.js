@@ -47,6 +47,14 @@ const patientSchema = new mongoose.Schema(
       type: String,
       require: false,
     },
+    religion: {
+      type: String,
+      require: false,
+    },
+    address: {
+      type: String,
+      require: false,
+    },
     workplace: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Workplace",

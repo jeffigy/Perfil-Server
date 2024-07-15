@@ -1,5 +1,6 @@
 const profileRoutes = require("express").Router();
 const profileController = require("../controllers/profileController");
+const upload = require("../middleware/multer");
 
 profileRoutes.route("/").get(profileController.getProfileByEmail);
 

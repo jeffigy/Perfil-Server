@@ -1,6 +1,5 @@
 const patientRoutes = require("express").Router();
 const patientsController = require("../controllers/patientsController");
-const upload = require("../middleware/multer");
 
 patientRoutes.route("/").get(patientsController.getAllPatients);
 

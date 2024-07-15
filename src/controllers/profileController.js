@@ -34,6 +34,8 @@ const updateDetails = async (req, res) => {
     mothersName,
     ethnicity,
     nationality,
+    religion,
+    address,
   } = req.body;
 
   if (
@@ -45,7 +47,9 @@ const updateDetails = async (req, res) => {
     !fathersName ||
     !mothersName ||
     !ethnicity ||
-    !nationality
+    !nationality ||
+    !religion ||
+    !address
   ) {
     return res.status(400).json({ message: "all fields are required" });
   }
@@ -63,7 +67,8 @@ const updateDetails = async (req, res) => {
   patient.fathersName = fathersName;
   patient.mothersName = mothersName;
   patient.ethnicity = ethnicity;
-  patient.nationality = nationality;
+  patient.address = address;
+  patient.religion = religion;
 
   await patient.save();
   res.json({ message: "Details successfully updated" });
