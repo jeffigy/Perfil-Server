@@ -112,12 +112,17 @@ const updateProfile = async (req, res) => {
 };
 
 const joinWorkplace = async (req, res) => {
-  const { id, workplace } = req.body;
+  const { id, workplaceCode } = req.body;
 
-  if (!id || !workplace) {
-    return res.status(400).json({ message: "id and workplace are required" });
+  if (!id || !workplaceCode) {
+    return res.status(400).json({ message: "workplace code is required" });
   }
-
+  if (workplaceCode.length !== 10) {
+    return res.status(400).json({
+      message:
+        "Workplace codes are 10 characters including letters and numbers, and no spaces or symbols",
+    });
+  }
   const patient = await Patient.findById(id).exec();
 
   const incompleteDetails =
@@ -127,19 +132,20 @@ const joinWorkplace = async (req, res) => {
     !patient.fathersName ||
     !patient.mothersName ||
     !patient.ethnicity ||
-    !patient.nationality;
+    !patient.nationality ||
+    !patient.religion;
 
   if (incompleteDetails) {
     res.status(400).json({ message: "your details are incomplete" });
   }
 
-  const foundWorkplace = await Workplace.findById(workplace).exec();
+  const foundWorkplace = await Workplace.findOne({ workplaceCode }).exec();
 
   if (!foundWorkplace) {
     return res.status(400).json({ message: "Workplace not found" });
   }
 
-  patient.workplace = workplace;
+  patient.workplace = foundWorkplace.id;
   await patient.save();
   res.json({ message: "Successfully joined workplace" });
 };

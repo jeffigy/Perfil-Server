@@ -3,18 +3,10 @@ const { setToJSONTransform } = require("../utils/mongooseUtils");
 
 const workplaceSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      require: true,
-    },
-    owner: {
-      type: String,
-      require: true,
-    },
-    address: {
-      type: String,
-      require: true,
-    },
+    name: String,
+    owner: String,
+    address: String,
+    workplaceCode: String,
   },
   {
     timestamps: true,

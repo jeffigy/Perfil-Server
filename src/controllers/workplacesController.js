@@ -1,4 +1,5 @@
 const Workplace = require("../models/Workplace");
+const { customAlphabet } = require("nanoid");
 
 const getAllWorkplace = async (_req, res) => {
   const workplaces = await Workplace.find({});
@@ -14,6 +15,10 @@ const getAllWorkplace = async (_req, res) => {
 
 const newWorkplace = async (req, res) => {
   const { name, owner, address } = req.body;
+
+  const alphabet =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const nanoid = customAlphabet(alphabet, 10);
 
   if (!name || !owner || !address) {
     return res.status(400).json({ message: "all fields are required" });
@@ -32,6 +37,7 @@ const newWorkplace = async (req, res) => {
     name,
     owner,
     address,
+    workplaceCode: nanoid(),
   };
 
   const newWorkplace = await Workplace.create(workplaceObject);
