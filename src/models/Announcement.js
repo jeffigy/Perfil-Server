@@ -7,10 +7,7 @@ const announcementSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    description: {
-      type: String,
-      require: false,
-    },
+
     workplace: {
       type: mongoose.Schema.Types.ObjectId,
       require: true,

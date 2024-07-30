@@ -23,7 +23,7 @@ const getAllAnnouncementsByWorkplaceId = async (req, res) => {
 };
 
 const newAnnouncement = async (req, res) => {
-  const { workplace, title, description } = req.body;
+  const { workplace, title } = req.body;
 
   if (!workplace || !title) {
     return res
@@ -42,7 +42,6 @@ const newAnnouncement = async (req, res) => {
   const announcementObj = {
     workplace,
     title,
-    description,
   };
 
   const announcement = Announcement.create(announcementObj);
@@ -56,7 +55,7 @@ const newAnnouncement = async (req, res) => {
 };
 
 const updateAnnouncement = async (req, res) => {
-  const { id, title, description, workplace } = req.body;
+  const { id, title, workplace } = req.body;
   if (!id || !title || !workplace) {
     return res
       .status(400)
@@ -79,7 +78,6 @@ const updateAnnouncement = async (req, res) => {
   }
 
   announcement.title = title;
-  announcement.description = description;
 
   await announcement.save();
   res.json({ message: "Announcement successfully updated" });
